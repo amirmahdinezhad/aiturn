@@ -1,0 +1,430 @@
+/* Graphite workspace: opaque surfaces, clear account identity and quiet iris controls. */
+:root {
+  --home-bg: #14171d;
+  --home-ambient: #24283c;
+  --home-surface: #222730;
+  --home-surface-top: #292f3b;
+  --home-selected-surface: var(--home-surface);
+  --home-segment-fill: color-mix(in srgb, var(--home-surface), var(--home-text) 10%);
+  --home-segment-ink: var(--home-text);
+  --home-text: #f1f4fa;
+  --home-muted: #b0bacb;
+  --home-inset: #1b2028;
+  --home-border: #39414f;
+  --home-divider: #343c49;
+  --home-hover: #303744;
+  --home-track: #414b5d;
+  --home-focus: #b6c6ff;
+  --home-action: #c5d2ff;
+  --home-add-fill: #505193;
+  --home-add-highlight: rgb(255 255 255 / 14%);
+  --home-add-shadow: none;
+  --home-active: #9faff7;
+  --home-healthy: #75d4b2;
+  --home-warning: #efc474;
+  --home-danger: #ff9a9c;
+  --home-picker: #252b35;
+  --home-scrim: rgb(6 9 15 / 54%);
+  --home-shadow: 0 3px 10px rgb(0 0 0 / 8%);
+}
+[data-theme="light"] {
+  --home-bg: #f1eff7;
+  --home-ambient: #e0d8f5;
+  --home-surface: #fff;
+  --home-surface-top: #faf8ff;
+  --home-selected-surface: #f9f6ff;
+  --home-segment-fill: var(--home-surface);
+  --home-segment-ink: var(--home-action);
+  --home-text: #292438;
+  --home-muted: #696278;
+  --home-inset: #eeebf5;
+  --home-border: #d3cbe2;
+  --home-divider: #dfd9eb;
+  --home-hover: #e3dcf3;
+  --home-track: #d8d0e7;
+  --home-focus: #6251b5;
+  --home-action: #5848aa;
+  --home-add-fill: #625cc1;
+  --home-add-highlight: rgb(255 255 255 / 9%);
+  --home-add-shadow: none;
+  --home-active: #7660bd;
+  --home-healthy: #16765b;
+  --home-warning: #925c0a;
+  --home-danger: #b93650;
+  --home-picker: #fdfcff;
+  --home-scrim: rgb(34 24 54 / 30%);
+  --home-shadow: 0 3px 10px rgb(51 34 85 / 7%);
+  /* Legacy and shared controls resolve to the same light palette as home. */
+  --bg: var(--home-bg);
+  --card: var(--home-surface);
+  --raised: var(--home-hover);
+  --raised-dark: var(--home-inset);
+  --inset: var(--home-inset);
+  --fg: var(--home-text);
+  --title: var(--home-text);
+  --muted: var(--home-muted);
+  --line: var(--home-border);
+  --inset-line: var(--home-divider);
+  --ok: var(--home-healthy);
+  --notice: var(--home-warning);
+}
+#root:has(> .home-header) {
+  --fg: var(--home-text); --muted: var(--home-muted);
+  --font: "Figtree Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--home-text); padding: 18px;
+  background: radial-gradient(ellipse 100% 250px at 10% 0, var(--home-ambient), transparent), var(--home-bg);
+}
+.home-header.app-header { display: flex; flex-direction: column; align-items: stretch; gap: 12px; margin: 0 0 16px; padding: 0; border: 0; }
+.home-topline { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.home-header .brand { min-width: 0; flex: 1; }
+.home-header .header-actions { gap: 2px; flex-shrink: 0; }
+.workspace-picker { display: flex; align-items: center; gap: 10px; width: fit-content; max-width: 100%; min-width: 0; min-height: 54px; padding: 6px 8px; margin-left: -6px; position: relative; isolation: isolate; border: 1px solid transparent; border-radius: var(--ui-radius); background: transparent; box-shadow: none; text-align: left; color: var(--home-text); transform: none; }
+.workspace-picker::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: var(--home-hover); opacity: 0; pointer-events: none; transition: opacity 300ms ease; }
+.workspace-picker:hover:enabled, .workspace-picker:active:enabled { background: transparent; }
+.workspace-picker:active:enabled { transform: none; }
+.workspace-mark { display: grid; place-items: center; flex-shrink: 0; width: 46px; height: 46px; border-radius: var(--ui-radius); color: #fff; background: var(--home-add-fill); font-size: 17px; line-height: 1.1; font-weight: 700; letter-spacing: normal; }
+.workspace-picker-copy { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 0 1 auto; }
+.workspace-picker-name { display: flex; align-items: center; gap: 6px; min-width: 0; max-width: 100%; }
+.home-header .workspace-picker .brand-caption { color: var(--home-muted); font-size: 10px; line-height: 14px; letter-spacing: 0; font-weight: 400; }
+.workspace-picker-name > strong { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 18px; line-height: 24px; font-weight: 600; letter-spacing: normal; }
+.workspace-picker-status { color: var(--home-muted); font-size: 10px; line-height: 14px; }
+.workspace-picker-chevron { flex-shrink: 0; width: 14px; height: 14px; color: var(--home-muted); transform: rotate(0deg); }
+.workspace-picker[aria-expanded="true"] .workspace-picker-chevron { transform: rotate(180deg); }
+.workspace-picker[data-closing="true"] .workspace-picker-chevron { transform: rotate(0deg); }
+.workspace-picker[data-motion="pointer"] .workspace-picker-chevron { transition: transform 200ms var(--ease-ios); }
+
+.home-accounts.providers { gap: 26px; padding: 0 1px 18px; scroll-padding-block: 10px; }
+.home-accounts .provider-account-groups { gap: 26px; }
+.home-accounts .provider-group-title { gap: 8px; margin: 0 0 12px; color: var(--home-text); font-size: 14px; line-height: 22px; font-weight: 700; }
+.home-accounts .provider-activation-note { margin: 0 0 12px; color: var(--home-muted); font-size: 12px; line-height: 1.5; }
+.home-accounts .provider-group-title > .plogo { width: 20px; height: 20px; opacity: 1; }
+.home-accounts .provider-group-title > .plogo svg { width: 100%; height: 100%; }
+.home-accounts .provider-count { margin-left: 0; color: var(--home-muted); background: var(--home-inset); border: 1px solid var(--home-divider); border-radius: 6px; height: 20px; min-width: 22px; padding-inline: 5px; font-size: 10px; font-variant-numeric: tabular-nums; }
+.home-accounts .provider-experimental { margin-left: 0; font-size: 10px; }
+.workspace-accounts > .codex-reset-notice {
+  --reset-tone: var(--home-active);
+  display: flex; align-items: center; gap: 10px; margin-bottom: 14px; padding: 10px 12px;
+  border: 1px solid var(--home-divider); border-radius: var(--ui-radius); background: var(--home-surface);
+}
+.codex-reset-notice[data-kind="possible"] { --reset-tone: var(--home-warning); }
+.codex-reset-notice[data-kind="completed"] { --reset-tone: var(--home-healthy); }
+.codex-reset-mark { display: grid; place-items: center; flex: 0 0 32px; height: 32px; border-radius: var(--ui-radius); background: color-mix(in srgb, var(--reset-tone) 12%, var(--home-inset)); color: var(--reset-tone); }
+.codex-reset-copy { flex: 1; min-width: 0; }
+.codex-reset-head { display: flex; align-items: center; flex-wrap: wrap; gap: 3px 8px; color: var(--home-text); font-size: 13px; line-height: 18px; }
+.codex-reset-head strong { font-weight: 600; }
+.codex-reset-chance { padding: 1px 6px; border-radius: 5px; background: color-mix(in srgb, var(--reset-tone) 12%, var(--home-inset)); color: var(--reset-tone); font-size: 10px; font-weight: 600; }
+.codex-reset-meta, .codex-reset-description { margin: 3px 0 0; color: var(--home-muted); font-size: 11px; line-height: 16px; font-variant-numeric: tabular-nums; }
+.home-accounts .codex-reset-close.ui-button { flex: 0 0 32px; width: 32px; height: 32px; min-height: 32px; }
+.home-accounts .workspace-account-list, .home-accounts .stack, .home-accounts .account-card-skeletons { gap: 14px; }
+.home-accounts .account-card, .home-accounts .account-card-skeleton { position: relative; padding: 16px; border: 0; border-radius: var(--ui-radius); background: var(--home-surface); box-shadow: inset 0 0 0 1px var(--home-divider); }
+.home-accounts .account-card { isolation: isolate; }
+.home-accounts .account-card .workspace-account-row { gap: 10px; align-items: flex-start; }
+.home-accounts .account-card .workspace-account-info { gap: 4px; min-width: 0; }
+.home-accounts .account-card .workspace-account-title { display: flex; align-items: center; gap: 2px 8px; }
+.home-accounts .account-card .workspace-account-title .row-title { color: var(--home-text); font: 600 14px/20px var(--font); letter-spacing: normal; overflow-wrap: anywhere; }
+.home-accounts .account-card .workspace-account-email { color: var(--home-muted); font-size: 11px; line-height: 17px; overflow-wrap: anywhere; white-space: normal; overflow: visible; text-overflow: clip; }
+.home-accounts .account-card.is-active {
+  background: var(--home-selected-surface);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--home-active) 45%, var(--home-divider));
+}
+.account-active-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--home-action) 10%, var(--home-surface));
+  color: var(--home-action);
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 600;
+}
+.account-active-label::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.home-accounts .account-card .workspace-account-title .plan-badge { padding: 2px 6px; border: 0; border-radius: 5px; background: var(--home-hover); color: var(--home-muted); font-size: 10px; line-height: 14px; }
+.home-accounts .account-card .workspace-account-actions { gap: 2px; margin: -4px -4px 0 0; flex-shrink: 0; }
+.home-accounts .account-card .workspace-account-actions .ui-button { color: var(--home-muted); border-radius: var(--ui-radius); }
+.home-accounts .account-card .workspace-account-actions .ui-button:not(.home-icon-button):not(.account-switch-action):hover:enabled { color: var(--home-text); background: var(--home-hover); }
+.home-accounts .account-card .account-switch-action { color: var(--home-text); border: 1px solid var(--home-divider); background: var(--home-inset); }
+.home-accounts :is(.account-card, .account-card-skeleton) .account-usage-preview { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--home-divider); color: var(--home-text); text-align: left; }
+.account-usage-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 0; flex: 1 0 100%; min-width: 0; }
+.account-usage-metric { display: flex; flex-direction: column; gap: 3px; min-width: 0; padding: 2px 14px 3px 0; border-radius: 0; background: transparent; color: var(--home-healthy); }
+.usage-preview-label { color: var(--home-muted); font-size: 10px; line-height: 14px; }
+.account-usage-metric > strong { display: flex; align-items: baseline; gap: 5px; color: var(--home-text); font-size: 20px; line-height: 24px; letter-spacing: -.3px; font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.account-usage-metric .usage-preview-unit { color: var(--home-muted); font-size: 10px; font-weight: 400; letter-spacing: normal; }
+.usage-preview-plot { display: block; position: relative; height: 12px; margin-top: 2px; cursor: default; }
+.usage-preview-plot::before { content: ""; position: absolute; inset: -5px 0; }
+.usage-preview-plot:focus-visible { outline: none; border-radius: 2px; }
+.usage-preview-track { display: block; position: absolute; top: 4px; left: 0; right: 0; height: 4px; border-radius: 3px; background: var(--home-track); overflow: hidden; }
+.usage-preview-time-marker { position: absolute; top: 0; width: 2px; height: 12px; border-radius: 1px; background: var(--home-text); box-shadow: 0 0 0 1px var(--home-surface); transform: translateX(-50%); pointer-events: none; }
+.usage-preview-time-marker[data-pending] { background: var(--home-warning); }
+.usage-reset-tooltip { display: flex; flex-direction: column; gap: 4px; }
+.usage-reset-tooltip strong { font-weight: 600; }
+.usage-reset-tooltip-note { font-size: 10px; opacity: .8; }
+.usage-preview-track > span { display: block; width: 100%; height: 100%; background: currentColor; transform-origin: left; }
+.account-usage-metric[data-tone="warning"] { color: var(--home-warning); }
+.account-usage-metric[data-tone="danger"] { color: var(--home-danger); }
+.account-usage-metric[data-tone="danger"] > strong { color: var(--home-danger); }
+.account-usage-metric + .account-usage-metric { padding-left: 14px; padding-right: 0; }
+.account-usage-skeleton-label, .account-usage-skeleton-value { display: flex; align-items: center; }
+.account-usage-skeleton-label { height: 14px; }
+.account-usage-skeleton-value { height: 30px; }
+.account-usage-skeleton-label > .ui-skeleton { width: 40px; height: 8px; border-radius: 4px; }
+.account-usage-skeleton-value > .ui-skeleton { width: 42px; height: 16px; border-radius: 5px; }
+.account-usage-skeleton .usage-preview-track { height: 4px; border-radius: 3px; }
+.home-accounts :is(.account-card-skeleton, .account-usage-skeleton) .ui-skeleton { background: var(--home-hover); }
+.home-accounts .home-inline-error, .home-accounts .empty-state-symbol { border-color: var(--home-divider); border-radius: var(--ui-radius); background: var(--home-inset); }
+.home-accounts .empty-state { max-width: 310px; margin-inline: auto; }
+.home-accounts .empty-state h2, .home-accounts .empty-state h3 { color: var(--home-text); font-size: 17px; line-height: 24px; }
+.home-accounts .empty-state p { color: var(--home-muted); line-height: 1.6; }
+.home-accounts .home-inline-error { padding: 14px; }
+.home-accounts .home-inline-error .ui-button { color: var(--home-text); background: var(--home-hover); border-color: var(--home-border); border-radius: var(--ui-radius); }
+.home-accounts .account-limit-notice { margin-top: 12px; padding-top: 10px; gap: 10px; flex-wrap: wrap; justify-content: flex-start; border-color: var(--home-divider); }
+.home-accounts .account-limit-label { color: var(--home-danger); font-weight: 600; }
+.account-limit-actions { display: flex; align-items: center; gap: 6px; }
+.home-accounts .account-limit-switch.ui-button { width: 34px; height: 32px; min-height: 32px; border: 1px solid var(--home-divider); border-radius: var(--ui-radius); background: var(--home-inset); color: var(--home-text); }
+.home-accounts .account-limit-switch.ui-button:hover:enabled { background: var(--home-hover); }
+.home-accounts .account-banked-reset.ui-button {
+  position: relative; isolation: isolate; height: 32px; min-height: 32px; min-width: 54px; padding: 4px 9px; gap: 6px;
+  border: 1px solid color-mix(in srgb, var(--home-active) 18%, var(--home-divider)); border-radius: var(--ui-radius);
+  color: var(--home-text); background: var(--home-inset); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums;
+}
+.home-accounts .account-banked-reset.ui-button:hover:enabled { background: var(--home-inset); }
+.account-banked-reset > .ak-icon { color: var(--home-muted); }
+.account-banked-reset::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; background: linear-gradient(110deg, color-mix(in srgb, var(--home-active) 14%, transparent), transparent); opacity: 0; transition: opacity 300ms ease; }
+.account-banked-reset:focus-visible::before { opacity: 1; transition: none; }
+@media (hover: hover) and (pointer: fine) {
+  .account-banked-reset:hover:enabled::before { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .account-banked-reset::before { transition-duration: 100ms; }
+}
+.home-accounts .account-card > .account-banked-reset { margin-top: 10px; }
+.home-accounts .workspace-error { margin-top: 12px; color: var(--home-danger); font-size: 11px; line-height: 17px; overflow-wrap: anywhere; }
+.home-accounts .workspace-expired, .home-accounts .other-providers { border-color: var(--home-divider); color: var(--home-muted); }
+
+.home-actions { margin-top: 0; padding: 10px; gap: 10px; border: 1px solid var(--home-divider); border-radius: var(--ui-radius); background: var(--home-surface); box-shadow: var(--home-shadow); }
+.home-actions .home-add-account {
+  position: relative; isolation: isolate; height: 44px; min-width: 0; gap: 8px; border: 0; border-radius: var(--ui-radius);
+  background: var(--home-add-fill);
+  color: #fff; box-shadow: var(--home-add-shadow); font: 700 13px/18px var(--font);
+}
+.home-actions .home-add-account.ui-button:hover { background: var(--home-add-fill); }
+.home-actions .home-add-account .ak-icon path { stroke-width: 2; }
+.home-secondary-actions { gap: 0; padding-left: 6px; border-left: 1px solid var(--home-divider); }
+
+/* The existing WAAPI presence keeps every dismissal animated through unmount. */
+.workspace-picker-overlay { position: fixed; inset: 0; z-index: 300; background: var(--home-scrim); }
+.workspace-picker-panel { position: fixed; z-index: 301; top: 88px; left: 16px; width: min(380px, calc(100vw - 32px)); max-height: calc(100dvh - 108px); display: flex; flex-direction: column; padding: 12px; border: 1px solid var(--home-border); border-radius: var(--ui-radius); background: var(--home-picker); box-shadow: 0 16px 40px rgb(0 0 0 / 20%); color: var(--home-text); font-family: "Figtree Variable", -apple-system, BlinkMacSystemFont, sans-serif; transform-origin: top left; opacity: 1; }
+.workspace-picker-panel[data-closing="true"] { pointer-events: none; }
+.workspace-picker-head { display: flex; justify-content: space-between; align-items: center; padding-left: 10px; }
+.workspace-picker-head h2 { margin: 0; font-size: 14px; line-height: 20px; font-weight: 600; }
+.workspace-picker-head .ui-button { color: var(--home-muted); border-radius: var(--ui-radius); }
+.workspace-choices { overflow-y: auto; min-height: 0; padding: 0 2px 8px; scroll-padding: 4px; }
+.workspace-current-card { display: flex; align-items: center; padding-right: 6px; border: 1px solid var(--home-divider); border-radius: var(--ui-radius); background: var(--home-inset); }
+.workspace-current-card > [role="listbox"] { flex: 1; min-width: 0; }
+.workspace-current-card .workspace-choice[aria-selected="true"] { border: 0; background: transparent; }
+.workspace-picker-panel .workspace-edit { position: relative; isolation: isolate; flex-shrink: 0; border: 0; border-radius: var(--ui-radius); background: transparent; color: var(--home-muted); }
+.workspace-choice-label { margin: 12px 8px 7px; color: var(--home-muted); font-size: 10px; line-height: 16px; }
+.workspace-choice { display: flex; align-items: center; gap: 11px; width: 100%; min-height: 58px; padding: 8px; border: 1px solid transparent; border-radius: var(--ui-radius); background: transparent; color: var(--home-text); text-align: left; font: 500 13px/19px "Figtree Variable", sans-serif; }
+.workspace-choice[aria-selected="true"] { background: var(--home-inset); border-color: var(--home-divider); }
+
+.workspace-choice > .workspace-mark { width: 32px; height: 34px; border-radius: var(--ui-radius); font-size: 12px; }
+.workspace-choice > span:nth-child(2) { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.workspace-choice > svg { width: 18px; height: 18px; flex-shrink: 0; color: var(--home-active); }
+.workspace-create-section { flex-shrink: 0; padding-top: 8px; border-top: 1px solid var(--home-divider); }
+.workspace-picker-panel .workspace-create { position: relative; isolation: isolate; width: 100%; background: transparent; justify-content: flex-start; flex-shrink: 0; gap: 9px; min-height: 48px; padding: 10px; border: 0; border-radius: var(--ui-radius); color: var(--home-text); font-size: 12px; }
+:is(.home-header, .home-actions, .home-accounts, .workspace-picker-panel) button:focus-visible { outline: none; }
+
+/* Matching solid sheets keep the provider/account context readable. */
+.ak-dialog { --fg: var(--home-text); --title: var(--home-text); --muted: var(--home-muted); --card: var(--home-surface); --raised: var(--home-hover); --inset: var(--home-inset); --line: var(--home-divider); --inset-line: var(--home-divider); background: var(--home-bg); color: var(--home-text); border: 1px solid var(--home-divider); font-family: "Figtree Variable", -apple-system, BlinkMacSystemFont, sans-serif; box-shadow: 0 16px 40px rgb(0 0 0 / 20%); }
+.ak-dialog.usage-card { padding: 20px; border-radius: var(--ui-radius); }
+.usage-card .modal-head, .usage-card .modal-detail { margin-bottom: 18px; }
+.usage-card .usage-identity strong { font-size: 17px; font-weight: 500; }
+.usage-card .usage-identity > span { font-size: 12px; }
+.usage-card .banked-reset-card { padding: 14px; border: 0; border-radius: var(--ui-radius); background: var(--home-surface); }
+.usage-card .quota-windows { gap: 12px; }
+.usage-card .usage-row, .usage-card .usage-row:first-child { padding: 16px; gap: 14px; border: 0; border-radius: var(--ui-radius); background: var(--home-surface); }
+.usage-card .usage-row + .usage-row { border: 0; }
+.usage-card .usage-name { font-size: 13px; color: var(--home-muted); }
+.usage-card .usage-row .usage-pct { font-size: 32px; font-weight: 500; color: var(--home-text); line-height: 1.15; }
+.usage-card .usage-bar { height: 8px; background: var(--home-track); }
+.usage-card .usage-meta { font-size: 11px; color: var(--home-muted); }
+.ui-tooltip { max-width: min(280px, calc(100vw - 24px)); overflow-wrap: anywhere; background: var(--home-picker); color: var(--home-text); border-color: var(--home-border); font-size: 11px; line-height: 16px; }
+
+@media (max-width: 380px) {
+  #root:has(> .home-header) { padding: 14px; }
+  .home-topline { gap: 4px; }
+  .workspace-picker { gap: 8px; }
+  .workspace-picker-name > strong { font-size: 16px; }
+  .workspace-picker > .workspace-mark { width: 40px; height: 40px; border-radius: var(--ui-radius); font-size: 15px; }
+  .home-accounts .account-card, .home-accounts .account-card-skeleton { padding: 14px; }
+  .home-actions { gap: 5px; padding: 8px; }
+  .home-actions .home-add-account { font-size: 12px; padding-inline: 8px; }
+  .home-secondary-actions { padding-left: 3px; }
+  .account-usage-metric { padding-right: 12px; }
+  .account-usage-metric + .account-usage-metric { padding-left: 12px; padding-right: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-accounts .account-switch-action .ak-spin { animation: none; }
+  .workspace-picker-chevron { transition: none !important; }
+  :is(.home-header, .home-actions, .workspace-account-actions) .ui-button > .ak-icon { transition: none !important; transform: none !important; }
+}
+
+/* Toasts span the top edge with their dismissal control inside the panel. */
+[data-sonner-toaster] { z-index: 500 !important; }
+[data-sonner-toast].home-notification { border-radius: 0 0 var(--ui-radius) var(--ui-radius) !important; padding: 14px 46px 14px 16px !important; font-size: 13px !important; line-height: 19px !important; box-shadow: 0 6px 20px rgb(0 0 0 / 16%) !important; }
+[data-sonner-toast].home-notification [data-close-button] { inset: 50% 12px auto auto !important; transform: translateY(-50%) !important; width: 26px !important; height: 26px !important; border-radius: var(--ui-radius) !important; }
+[data-sonner-toast][data-type="success"] [data-icon] { color: var(--home-healthy); }
+[data-sonner-toast][data-type="error"] [data-icon] { color: var(--home-danger); }
+[data-sonner-toast] [data-title] { overflow-wrap: anywhere; }
+.home-accounts .account-card .account-switch-action { width: auto; min-width: 68px; gap: 5px; padding-inline: 9px; }
+.account-switch-label { font-size: 11px; font-weight: 500; }
+.home-accounts .account-data-note { margin: 12px 0 0; padding-top: 10px; border-top: 1px solid var(--home-divider); color: var(--home-muted); font-size: 11px; line-height: 16px; }
+.error-panel { margin-bottom: 14px; padding: 12px; border: 1px solid color-mix(in srgb, var(--home-danger) 35%, var(--home-divider)); border-radius: var(--ui-radius); background: color-mix(in srgb, var(--home-danger) 7%, var(--home-inset)); color: var(--home-text); }
+.error-panel .error-head { align-items: flex-start; gap: 10px; }
+.error-panel .error-title { min-width: 0; font-size: 12px; line-height: 18px; font-weight: 500; overflow-wrap: anywhere; }
+.error-panel .error-actions { flex-shrink: 0; gap: 4px; }
+.error-panel .error-actions .ui-button { min-height: 36px; padding: 5px 8px; border-radius: var(--ui-radius); color: var(--home-muted); font-size: 11px; }
+.error-panel .error-actions .ui-button:hover { color: var(--home-text); background: var(--home-hover); }
+
+/* Identity is a readable landmark, not a clickable avatar. */
+.home-accounts .account-card .account-identity { display: flex; flex-direction: row; align-items: flex-start; gap: 10px; }
+.account-monogram { display: grid; place-items: center; width: 40px; height: 40px; flex-shrink: 0; border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--home-divider)); border-radius: var(--ui-radius); background: color-mix(in srgb, var(--accent) 18%, var(--home-inset)); color: var(--home-text); font: 600 13px/1 var(--font); letter-spacing: .2px; }
+[data-theme="light"] .account-monogram { color: var(--home-action); background: color-mix(in srgb, var(--home-active) 12%, var(--home-inset)); border-color: var(--home-divider); }
+[data-theme="light"] .account-card.is-active .account-monogram { color: #fff; background: var(--home-add-fill); border-color: transparent; }
+.account-identity-copy { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.home-accounts .account-card .workspace-account-actions { margin-top: -5px; }
+.home-actions { border-radius: var(--ui-radius); }
+.home-accounts .account-card-skeleton-row { display: grid; grid-template-columns: 40px minmax(0, 1fr) 44px; gap: 10px; align-items: start; }
+.home-accounts .account-skeleton-avatar { width: 40px; height: 40px; border-radius: var(--ui-radius); }
+
+/* Home motion: controls provide feedback, while account surfaces stay fixed.
+ * No animated border color, shadow, blur, layout or per-frame React state. */
+#root:has(> .home-header), .workspace-picker-panel {
+  --home-motion-feedback: 160ms;
+  --home-motion-press: 100ms;
+}
+:is(.home-header, .home-actions, .home-accounts) .ui-button { transition: transform var(--home-motion-feedback) var(--ease-out); }
+:is(.home-header, .home-actions, .home-accounts) .ui-button:focus-visible { transition: none; }
+.account-extra-limits { margin-top: 12px; color: var(--home-muted); font-size: 11px; }
+.account-extra-limits > summary { cursor: pointer; padding-block: 4px; }
+.account-extra-limits > summary span { margin-left: 4px; font-variant-numeric: tabular-nums; }
+.account-extra-limits .account-usage-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 16px; }
+.account-extra-limits .usage-preview-label { overflow-wrap: anywhere; }
+.account-extra-limits .account-usage-metric { padding-inline: 0 10px; }
+.account-reconnect.ui-button { margin-top: 6px; }
+
+/* Fade the full button face beneath the label so both hover directions are visible. */
+.home-actions .home-add-account::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 0;
+  background: var(--home-add-highlight);
+  opacity: 0; transition: opacity 280ms ease;
+}
+.home-actions .home-add-account > * { position: relative; z-index: 1; }
+.home-actions .home-add-account:active:enabled:not(:focus-visible) { transform: scale(.98); transition-duration: var(--home-motion-press); }
+.home-actions .home-add-account:focus-visible { transform: none; }
+
+:is(.home-header, .home-actions, .home-accounts) .ui-button > .ak-icon,
+.workspace-picker > .workspace-mark,
+.workspace-choice > .workspace-mark { transition: transform var(--home-motion-feedback) var(--ease-out); }
+:is(.home-header, .home-actions, .home-accounts) .ui-button:focus-visible > .ak-icon { transition: none; }
+.workspace-picker:active:enabled:not(:focus-visible) > .workspace-mark,
+.workspace-choice:not([aria-selected="true"]):active:enabled:not(:focus-visible) > .workspace-mark { transform: scale(.97); transition-duration: var(--home-motion-press); }
+.workspace-choice { transition: transform var(--home-motion-feedback) var(--ease-out); }
+.workspace-choice:not([aria-selected="true"]):active:enabled:not(:focus-visible) { transform: scale(.98); transition-duration: var(--home-motion-press); }
+.workspace-choice:focus-visible { transition: none; transform: none; }
+.workspace-picker:focus-visible > .workspace-mark,
+.workspace-choice:focus-visible > .workspace-mark { transition: none; }
+
+@media (hover: hover) and (pointer: fine) {
+  .home-actions .home-add-account:hover:enabled::before { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-actions .home-add-account::before { transition: opacity 100ms var(--ease-out) !important; }
+  .home-actions .home-add-account:active:enabled:not(:focus-visible) { transform: none; }
+  :is(.home-header, .home-actions, .home-accounts) .ui-button > .ak-icon,
+  .workspace-choice, .workspace-choice > .workspace-mark, .workspace-picker > .workspace-mark { transition: none !important; transform: none !important; }
+}
+
+/* Focused account actions: clear affordances, stable labels and bounded feedback. */
+.home-accounts .account-card .workspace-account-actions .account-switch-action {
+  position: relative; isolation: isolate; min-width: 74px; gap: 6px; padding-inline: 11px;
+  border: 0; background: transparent; color: var(--home-action); border-radius: var(--ui-radius);
+}
+.home-accounts .account-card .workspace-account-actions .account-switch-action:hover:enabled { background: transparent; color: var(--home-action); }
+.account-switch-action::before, .account-switch-action::after {
+  content: ""; position: absolute; inset: 5px 0; border-radius: var(--ui-radius); pointer-events: none; z-index: -1;
+}
+.account-switch-action::before { border: 1px solid color-mix(in srgb, var(--home-active) 30%, var(--home-divider)); background: color-mix(in srgb, var(--home-active) 8%, var(--home-inset)); }
+.account-switch-action::after { background: linear-gradient(120deg, color-mix(in srgb, var(--home-active) 20%, transparent), color-mix(in srgb, var(--home-active) 6%, transparent)); opacity: 0; transition: opacity 300ms ease; }
+.account-switch-label { font-weight: 600; }
+.home-accounts .account-card .account-switch-action[aria-busy="true"] { opacity: .85; cursor: progress; }
+.home-accounts .account-card .account-switch-action:active:enabled:not(:focus-visible) { transform: scale(.97); transition-duration: var(--home-motion-press); }
+.account-switch-action:focus-visible::after { opacity: 1; transition: none; }
+@media (hover: hover) and (pointer: fine) {
+  .account-switch-action:hover:enabled::after { opacity: 1; }
+}
+
+/* Small, opaque reset ticket; the full date/marker explanation remains in aria-valuetext. */
+.ui-tooltip.usage-reset-popover {
+  min-width: 156px; max-width: min(220px, calc(100vw - 24px)); padding: 11px 12px;
+  border: 1px solid var(--home-border); border-radius: var(--ui-radius); background: var(--home-picker);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 18%); color: var(--home-text);
+}
+.usage-reset-tooltip { display: flex; flex-direction: column; gap: 7px; }
+.usage-reset-tooltip-label { display: flex; align-items: center; gap: 6px; color: var(--home-muted); font-size: 10px; line-height: 14px; }
+.usage-reset-tooltip-label > .ak-icon { color: var(--home-active); }
+.usage-reset-tooltip-date { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; font-size: 11px; line-height: 24px; }
+.usage-reset-tooltip-date time { font-size: 20px; font-weight: 500; letter-spacing: -.3px; font-variant-numeric: tabular-nums; }
+.usage-reset-tooltip-status { font-size: 12px; line-height: 20px; }
+@media (prefers-reduced-motion: reduce) {
+  .account-switch-action::after { transition: opacity 100ms ease !important; }
+  .home-accounts .account-card .account-switch-action:active:enabled,
+  .home-accounts .account-switch-action > .ak-icon { transform: none !important; }
+  .account-switch-action:focus-visible::after { transition: none !important; }
+}
+
+.home-accounts .account-switch-action:active:enabled:not(:focus-visible) > .ak-icon { transform: none; }
+
+/* High-frequency controls stay still: one opacity fade, no hover fill/color snap. */
+:is(.home-header, .home-actions, .home-accounts) .home-icon-button {
+  position: relative; isolation: isolate; border: 0; border-radius: var(--ui-radius); background: transparent; color: var(--home-muted); box-shadow: none;
+}
+:is(.home-header, .home-actions, .home-accounts) .home-icon-button:hover:enabled,
+:is(.home-header, .home-actions, .home-accounts) .home-icon-button:active:enabled {
+  background: transparent; color: var(--home-muted);
+}
+.home-icon-button::before { content: ""; position: absolute; inset: 2px; z-index: -1; border-radius: var(--ui-radius); pointer-events: none; background: var(--home-hover); opacity: 0; transition: opacity 300ms ease; }
+:is(.home-header, .home-actions, .home-accounts) .home-icon-button:active:enabled:not(:focus-visible) { transform: scale(.96); transition-duration: 100ms; }
+:is(.home-header, .home-actions, .home-accounts) .home-icon-button:focus-visible, .home-header .workspace-picker:focus-visible { outline: none; }
+.home-icon-button:focus-visible::before, .workspace-picker:focus-visible::before { opacity: 1; transition: none; }
+@media (hover: hover) and (pointer: fine) {
+  .home-icon-button:hover:enabled:not(:focus-visible)::before,
+  .workspace-picker:hover:enabled:not(:focus-visible)::before { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-icon-button::before, .workspace-picker::before { transition: opacity 100ms ease !important; }
+  :is(.home-header, .home-actions, .home-accounts) .home-icon-button:active:enabled { transform: none; }
+  .home-icon-button:focus-visible::before, .workspace-picker:focus-visible::before { transition: none !important; }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .workspace-choice:not([aria-selected="true"]):hover:enabled { background: var(--home-hover); }
+}
+
+/* Quit stays quiet, but its coral icon distinguishes it from setup actions. */
+:is(.home-header, .home-actions) .home-quit.home-icon-button,
+:is(.home-header, .home-actions) .home-quit.home-icon-button:is(:hover, :active):enabled {
+  color: var(--home-danger);
+}
+.home-quit.home-icon-button::before {
+  background: color-mix(in srgb, var(--home-danger) 12%, transparent);
+  transition: opacity 160ms ease;
+}
+.home-quit.home-icon-button:active:enabled::before { opacity: 1; }

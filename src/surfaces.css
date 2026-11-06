@@ -1,0 +1,911 @@
+/* Secondary surfaces share the tray home palette and control rhythm. */
+:is(.ak-dialog, .ui-select-content, .workspace-setup) {
+  --font: "Figtree Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --fg: var(--home-text);
+  --title: var(--home-text);
+  --muted: var(--home-muted);
+  --card: var(--home-picker);
+  --inset: var(--home-inset);
+  --raised-dark: var(--home-inset);
+  --raised: var(--home-surface-top);
+  --line: var(--home-border);
+  --inset-line: var(--home-divider);
+  --control-hover: var(--home-hover);
+  --control-hover-fill: var(--home-hover);
+  --control-pressed: color-mix(in srgb, var(--home-hover), var(--home-text) 7%);
+  --control-pressed-fill: var(--control-pressed);
+  --control-motion: 180ms;
+  --action-footer-inset: 18px;
+  color: var(--home-text);
+  font-family: var(--font);
+}
+
+.ak-backdrop { background: var(--home-scrim); }
+.ak-dialog {
+  --action-footer-inset: 16px;
+  width: calc(100% - 28px);
+  max-height: calc(100dvh - 28px);
+  padding: 16px;
+  border: 1px solid var(--home-border);
+  border-radius: var(--ui-radius);
+  background: var(--home-picker);
+  box-shadow: var(--shadow-sheet);
+}
+.ak-dialog:is(.limit-switch-card, .workspace-action-popup, .discard-confirm) { border-radius: var(--ui-radius); }
+.ak-dialog .modal-head {
+  justify-content: flex-start;
+  min-height: 40px;
+  padding: 0 36px 0 2px;
+  margin-bottom: 12px;
+}
+.ak-dialog .modal-head:has(.modal-back) { padding-left: 40px; }
+.ak-dialog .ak-heading { text-align: left; font-size: 17px; font-weight: 700; letter-spacing: -.25px; }
+.ak-dialog :is(.modal-head .icon, .modal-head .modal-back).ui-button {
+  isolation: isolate; width: 36px; height: 36px; min-height: 36px;
+  border-radius: var(--ui-radius); border: 0; background: transparent; color: var(--home-muted);
+}
+.ak-dialog .modal-head :is(.icon, .modal-back).ui-button:not(.popup-close)::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit;
+  background: var(--home-hover); opacity: 0; pointer-events: none;
+  transition: opacity 220ms var(--ease-out);
+}
+.ak-dialog .modal-head :is(.icon, .modal-back).ui-button:active:enabled { transform: translateY(-50%) scale(.96); }
+.app-modal-body { padding: 2px 2px 4px; scrollbar-gutter: auto; }
+
+.ak-dialog .modal-detail {
+  padding: 12px;
+  margin: 0 0 14px;
+  border: 0;
+  border-radius: var(--ui-radius);
+  background: var(--home-inset);
+}
+.ak-dialog .usage-identity { align-items: flex-start; text-align: left; gap: 3px; }
+.ak-dialog .usage-identity strong { font-size: 13px; font-weight: 650; overflow-wrap: anywhere; }
+.ak-dialog .usage-identity span { font-size: 11px; line-height: 16px; overflow-wrap: anywhere; }
+
+.ak-dialog[data-state="open"] { animation: surface-enter var(--popup-duration) var(--ease-out) both; }
+.ak-dialog[data-state="closed"] { animation: surface-exit var(--popup-duration) var(--ease-in-out) both; pointer-events: none; }
+.ak-backdrop[data-state="open"] { animation: surface-fade-in var(--popup-duration) var(--ease-out) both; }
+.ak-backdrop[data-state="closed"] { animation: surface-fade-out var(--popup-duration) var(--ease-in-out) both; pointer-events: none; }
+@keyframes surface-enter { from { opacity: 0; transform: translateY(8px) scale(.985); } to { opacity: 1; transform: none; } }
+@keyframes surface-exit { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(8px) scale(.985); } }
+@keyframes surface-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes surface-fade-out { from { opacity: 1; } to { opacity: 0; } }
+
+:is(.ak-dialog, .workspace-setup) .ui-button {
+  border-radius: var(--ui-radius);
+  transition: background-color var(--control-motion) ease, color var(--control-motion) ease,
+    transform 170ms var(--ease-out);
+}
+:is(.ak-dialog, .workspace-setup) .ui-button:is(.ui-button-primary, .primary):enabled {
+  background: var(--home-add-fill);
+  color: #fff;
+}
+:is(.ak-dialog, .workspace-setup) .ui-button:not(.ui-button-icon, .ui-button-icon-sm, .modal-back):active:enabled:not(:focus-visible) {
+  transform: scale(.98);
+  transition-duration: 100ms;
+}
+:is(.ak-dialog, .workspace-setup) :is(.ui-button, .ui-select-trigger, .ui-tabs-trigger, button.ui-switch, button.ui-checkbox):focus-visible {
+  outline: none;
+
+  transition: none;
+}
+:is(.ak-dialog, .workspace-setup) :is(input:not([type="radio"], [type="file"]), textarea, .ui-select-trigger) {
+  background: var(--home-inset);
+  border-color: var(--home-divider);
+  border-radius: var(--ui-radius);
+}
+/* Fields retain their normal border without an additional focus edge. */
+:is(.ak-dialog, .workspace-setup) :is(input:not([type="radio"], [type="file"]), textarea) {
+  outline: none;
+  box-shadow: none;
+  transition: border-color var(--control-motion) ease;
+}
+:is(.ak-dialog, .workspace-setup) :is(input:not([type="radio"], [type="file"]), textarea):focus {
+  outline: none;
+  box-shadow: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.ak-dialog, .workspace-setup) :is(input:not([type="radio"], [type="file"]), textarea) { transition: none; }
+}
+
+.ak-dialog .settings-group {
+  background: var(--home-inset); border: 1px solid var(--home-divider); border-radius: var(--ui-radius);
+}
+.ak-dialog .settings-subtitle { color: var(--home-muted); font-size: 11px; letter-spacing: .15px; }
+.ak-dialog .setting-name { font-size: 13px; font-weight: 600; }
+.ak-dialog .setting-desc { color: var(--home-muted); }
+.ak-dialog :is(.workspace-manage-list, .account-preference-section, .profile-row, .account-connection, .update-card) {
+  background: var(--home-inset); border-color: var(--home-divider); border-radius: var(--ui-radius);
+}
+.ak-dialog :is(.workspace-manage-row, .account-preference-section > summary, .update-release-notes > summary) {
+  transition: color 160ms ease, background-color 160ms ease;
+}
+.ak-dialog :is(.settings-panel, #workspace-settings-body .ui-tabs-content)[data-state="active"] {
+  animation: none;
+}
+.ak-dialog:has([role="tab"]:focus-visible) :is(.settings-panel, #workspace-settings-body .ui-tabs-content)[data-state="active"],
+.ak-dialog .settings-body.no-motion .settings-panel { animation: none; }
+
+.ak-dialog button.ui-switch {
+  background: var(--home-track);
+  transition: background-color var(--control-motion) ease;
+}
+.ak-dialog button.ui-switch[data-state="checked"] { background: var(--home-add-fill); }
+.ak-dialog .ui-switch-thumb { transition: transform 170ms var(--ease-out); }
+.ak-dialog button.ui-switch:focus-visible .ui-switch-thumb { transition: none; }
+:is(.ak-dialog, .workspace-setup) button.ui-checkbox { transition: background-color 150ms ease, border-color 150ms ease; }
+:is(.ak-dialog, .workspace-setup) button.ui-checkbox[data-state="checked"] { background: var(--home-add-fill); border-color: var(--home-active); }
+
+.ui-select-content {
+  padding: 4px;
+  border-color: var(--home-border);
+  background: var(--home-picker);
+  outline: none;
+  transform-origin: var(--radix-select-content-transform-origin, center top);
+}
+.ui-select-content[data-state="open"] { animation: surface-fade-in 180ms var(--ease-out) both; }
+.ui-select-content[data-state="closed"] { animation: surface-fade-out 180ms var(--ease-in-out) both; }
+/* Selection is the checkmark; only the current pointer/keyboard target gets a fill. */
+.ui-select-item {
+  position: relative;
+  isolation: isolate;
+  min-height: 36px;
+  padding-inline: 8px;
+  border-radius: calc(var(--ui-radius) - 5px);
+  background: transparent;
+  outline: none;
+  box-shadow: none;
+}
+.ui-select-item[data-highlighted] { background: transparent; }
+.ui-select-item::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--home-hover);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms var(--ease-out);
+}
+.ui-select-content[data-input="keyboard"] { animation: none; }
+.ui-select-content[data-input="keyboard"] .ui-select-item::before { transition: none; }
+.ui-select-content[data-input="keyboard"] .ui-select-item[data-highlighted] {
+  outline: none;
+
+}
+.ui-select-content[data-input="keyboard"] .ui-select-item[data-highlighted]::before { opacity: 1; }
+@media (hover: hover) and (pointer: fine) {
+  .ui-select-content[data-input="pointer"] .ui-select-item[data-highlighted]:hover::before { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ui-select-item::before { transition-duration: 100ms; }
+}
+.ui-select-check { color: var(--home-action); }
+
+.workspace-setup-scroll { padding-inline: 3px; }
+.workspace-setup .setup-page h2 { text-align: left; color: var(--home-text); font-size: 19px; letter-spacing: -.25px; }
+.workspace-setup .setup-page .workspace-intro { text-align: left; }
+.workspace-setup .setup-page-add-account > :is(h2, .workspace-intro) { text-align: center; }
+.workspace-setup .workspace-setup-footer { border-top: 1px solid var(--home-divider); }
+.workspace-setup:is(.workspace-setup-wizard, .add-accounts-panel) { padding-bottom: 0; }
+.ak-dialog .workspace-setup { --action-footer-inset: 16px; }
+.ak-dialog .app-modal-body:has(> .workspace-setup) { padding-bottom: 0; }
+/* Match the bottom inset supplied by the home panel or dialog container. */
+.workspace-setup-wizard .workspace-setup-footer { padding: var(--action-footer-inset) 3px 0; }
+.workspace-setup-wizard .workspace-setup-footer .workspace-form-actions { padding: 0; }
+.workspace-setup-wizard .workspace-setup-footer .workspace-form-actions > .ui-button { height: 44px; min-height: 44px; }
+.workspace-setup .setup-page { animation: setup-page-enter 190ms var(--ease-out) both; }
+@keyframes setup-page-enter {
+  from { opacity: 0; transform: translateX(var(--page-offset, 6px)); }
+  to { opacity: 1; transform: none; }
+}
+.setup-selection-summary h3 { margin: 0; font-size: 13px; font-weight: 650; color: var(--home-text); }
+.setup-selection-summary h3:focus { outline: none; }
+.setup-account-option, .enrollment-choices .enrollment-choice {
+  background: var(--home-inset);
+  border: 1px solid var(--home-divider);
+  border-radius: var(--ui-radius);
+}
+.setup-account-option { min-height: 56px; padding: 10px; gap: 8px; transition: background-color 180ms ease, border-color 180ms ease; }
+.setup-account-option.is-selected { background: color-mix(in srgb, var(--home-inset), var(--home-active) 9%); border-color: var(--home-active); }
+.setup-account-option:focus-within { outline: none; }
+.setup-account-identity { gap: 2px; }
+.setup-account-identity strong, .enrollment-choice strong { font-weight: 650; overflow-wrap: anywhere; }
+.setup-account-option > .plan-badge { flex-shrink: 0; }
+.setup-account-option .workspace-active-badge { color: var(--home-healthy); }
+.enrollment-choice > svg:last-child { color: var(--home-muted); transition: transform 180ms var(--ease-out); }
+.enrollment-overview .enrollment-discover.ui-button { min-height: 40px; justify-content: center; color: var(--home-action); }
+
+/* Discovery uses the same quiet identity hierarchy as the home cards. */
+.setup-account-list .setup-account-option {
+  position: relative; isolation: isolate; align-items: flex-start;
+  min-height: 86px; padding: 14px 12px; gap: 10px;
+  background: var(--home-inset); border: 1px solid var(--home-divider);
+  border-radius: var(--ui-radius); transition: none;
+}
+.setup-account-list .setup-account-option::before {
+  content: ""; position: absolute; inset: -1px; z-index: -1;
+  border: 1px solid var(--home-active); border-radius: inherit;
+  background: color-mix(in srgb, var(--home-active) 9%, var(--home-inset));
+  opacity: 0; pointer-events: none; transition: opacity 160ms var(--ease-out);
+}
+.setup-account-list .setup-account-option.is-selected { background: var(--home-inset); border-color: var(--home-divider); }
+.setup-account-option.is-selected::before { opacity: 1; }
+.setup-account-option > :is(.ui-checkbox, .plogo) { flex-shrink: 0; margin-top: 3px; }
+.setup-account-option > .plogo { width: 22px; height: 22px; }
+.setup-account-option .setup-account-identity { gap: 3px; }
+.setup-account-option .setup-account-identity > strong { font-size: 14px; line-height: 20px; font-weight: 600; }
+.setup-account-option .setup-account-email { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 16px; }
+.setup-account-option .setup-account-metadata { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 3px; overflow: visible; }
+.setup-account-metadata .plan-badge { padding: 2px 6px; border: 0; border-radius: 5px; background: var(--home-hover); color: var(--home-muted); font-size: 10px; line-height: 14px; }
+.setup-account-active { display: inline-flex; align-items: center; gap: 5px; color: var(--home-text); font-size: 10px; }
+.setup-account-source { color: var(--home-muted); font-size: 11px; }
+.setup-account-active > i { width: 5px; height: 5px; border-radius: 50%; background: var(--home-healthy); }
+.setup-selection-summary { flex-wrap: wrap; gap: 4px 12px; margin-bottom: 10px; }
+.setup-selected-count { min-width: 54px; text-align: right; }
+.add-accounts-card .app-modal-body { display: flex; overflow: hidden; }
+.add-accounts-card .ak-heading { font-size: 19px; }
+.add-accounts-panel { flex: 1; }
+.add-accounts-panel .workspace-setup-scroll { padding-bottom: 0; }
+.enrollment-review { align-items: stretch; gap: 12px; }
+.enrollment-destination { display: flex; align-items: center; gap: 12px; padding: 2px 0 8px; min-width: 0; }
+.enrollment-destination .workspace-mark { width: 44px; height: 44px; font-size: 19px; background: color-mix(in srgb, var(--home-add-fill) 24%, var(--home-inset)); color: var(--home-action); }
+.enrollment-review .enrollment-step-heading { min-width: 0; gap: 2px; margin: 0; }
+.enrollment-review .enrollment-step-heading h3 { font-size: 21px; line-height: 26px; letter-spacing: -.4px; overflow-wrap: anywhere; }
+.enrollment-review .enrollment-step-heading p { font-size: 12px; }
+.enrollment-review .enrollment-step-heading strong { color: var(--home-text); font-weight: 650; }
+.enrollment-review .enrollment-added-list {
+  gap: 0; overflow: hidden; border: 1px solid var(--home-divider);
+  border-radius: var(--ui-radius); background: var(--home-inset);
+}
+.enrollment-review .setup-account-option {
+  position: relative; isolation: isolate; display: grid; align-items: center;
+  grid-template-columns: 32px minmax(0, 1fr) 20px;
+  gap: 2px 12px; min-height: 88px; padding: 14px 12px;
+  border: 0; border-radius: 0; background: transparent; transition: none;
+}
+.enrollment-review .setup-account-option + .setup-account-option { border-top: 1px solid var(--home-divider); }
+.enrollment-review .setup-account-option:first-child { border-start-start-radius: calc(var(--ui-radius) - 1px); border-start-end-radius: calc(var(--ui-radius) - 1px); }
+.enrollment-review .setup-account-option:last-child { border-end-start-radius: calc(var(--ui-radius) - 1px); border-end-end-radius: calc(var(--ui-radius) - 1px); }
+.enrollment-review .setup-account-option::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: color-mix(in srgb, var(--home-active) 9%, var(--home-inset));
+  opacity: 0; transition: opacity 160ms ease;
+}
+.enrollment-review .setup-account-option:has(.ui-checkbox[data-state="checked"])::before { opacity: 1; }
+.enrollment-review .setup-account-option:has(.ui-checkbox:focus-visible) {
+  outline: none;
+}
+.enrollment-review .setup-account-option .ui-checkbox:focus-visible { outline: none; }
+.enrollment-review .setup-account-option > .plogo {
+  grid-area: 1 / 1 / 3; display: grid; place-items: center;
+  width: 32px; height: 32px; margin: 0; border-radius: 8px; background: var(--home-hover);
+}
+.enrollment-review .setup-account-option > .plogo svg { width: 19px; height: 19px; }
+.enrollment-review .setup-account-option > .ui-checkbox { grid-area: 1 / 3 / 3; justify-self: center; margin: 0; }
+.enrollment-review .setup-account-identity { grid-area: 1 / 2; }
+.enrollment-account-plan { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px; color: var(--home-muted); font-size: 11px; }
+.enrollment-review .enrollment-account-plan { grid-area: 2 / 2; }
+.enrollment-review .plan-badge { max-width: 100%; padding: 1px 5px; border: 0; background: var(--home-hover); color: var(--home-muted); }
+.enrollment-review .enrollment-add-more.ui-button {
+  align-self: stretch; justify-content: flex-start; gap: 10px; min-height: 44px; padding-inline: 12px; color: var(--home-action);
+}
+.add-accounts-footer {
+  flex-shrink: 0; display: grid; gap: 8px; margin: 8px 3px 0;
+  padding-top: var(--action-footer-inset); border-top: 1px solid var(--home-divider);
+}
+.add-accounts-actions { display: flex; flex-direction: column; align-items: stretch; gap: 6px; }
+.add-accounts-selection { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; column-gap: 4px; }
+.add-accounts-selection > span { padding-inline: 4px; color: var(--home-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.add-accounts-selection .ui-button { min-height: 44px; padding-inline: 8px; }
+.add-accounts-selection .ui-button[aria-disabled="true"] { color: var(--home-muted); background: transparent; cursor: default; transform: none; }
+.add-accounts-actions > .ui-button { flex-shrink: 0; min-height: 44px; min-width: 122px; }
+.add-accounts-actions > .ui-button-primary:disabled { background: var(--home-add-fill); color: #fff; }
+.enrollment-review .setup-account-option .ui-checkbox-indicator { opacity: 1; transition: opacity 160ms ease; }
+.enrollment-review .setup-account-option .ui-checkbox-indicator[data-state="unchecked"] { opacity: 0; }
+.add-accounts-panel[data-motion="keyboard"] .enrollment-review .setup-account-option::before,
+.add-accounts-panel[data-motion="keyboard"] .enrollment-review :is(button.ui-checkbox, .ui-checkbox-indicator),
+.add-accounts-panel[data-motion="keyboard"] .enrollment-review button.ui-checkbox::after { transition: none; }
+@media (hover: hover) and (pointer: fine) {
+  .add-accounts-panel .enrollment-review .enrollment-added-list .setup-account-option:hover { background: transparent; }
+}
+.add-accounts-panel[data-motion="pointer"] .account-enrollment {
+  opacity: 1; transform: none;
+  transition: opacity 180ms var(--ease-out), transform 180ms var(--ease-out);
+}
+@starting-style {
+  .add-accounts-panel[data-motion="pointer"] .account-enrollment { opacity: 0; transform: translateY(4px); }
+}
+.add-accounts-panel .account-enrollment.setup-page { animation: none; }
+.workspace-setup-wizard[data-motion="keyboard"] .setup-account-list .setup-account-option::before { transition: none; }
+.workspace-setup[data-motion="keyboard"] .setup-page { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  .add-accounts-panel[data-motion="pointer"] .account-enrollment { transform: none; transition: opacity 100ms ease; }
+  .enrollment-review .setup-account-option::before,
+  .enrollment-review .setup-account-option .ui-checkbox-indicator { transition-duration: 100ms; }
+  @starting-style {
+    .add-accounts-panel[data-motion="pointer"] .account-enrollment { transform: none; }
+  }
+}
+
+.ak-dialog :is(.banked-reset-card, .banked-reset-facts, .banked-reset-pending, .limit-switch-reset) { border-radius: var(--ui-radius); }
+.ak-dialog :is(.banked-reset-review, .limit-switch-content) { gap: 12px; }
+.ak-dialog .banked-resets { margin-top: 0; }
+.ak-dialog .banked-reset-impact svg { color: var(--home-action); }
+.ak-dialog .banked-reset-review { animation: surface-fade-in 140ms ease-out both; }
+.ak-dialog .limit-switch-symbol { color: var(--home-warning); background: color-mix(in srgb, var(--home-inset), var(--home-warning) 12%); }
+.ak-dialog.discard-confirm p { text-align: left; }
+.ak-dialog .workspace-action-copy { margin-bottom: 12px; }
+
+@media (hover: hover) and (pointer: fine) {
+  .ak-dialog .modal-head :is(.icon, .modal-back).ui-button:hover:enabled::before { opacity: 1; }
+  :is(.ak-dialog, .workspace-setup) .ui-button:is(.ui-button-primary, .primary):hover:enabled { background: color-mix(in srgb, var(--home-add-fill), white 10%); }
+  :is(.ak-dialog, .workspace-setup) :is(.setup-account-option:not(.is-selected), .enrollment-choices .enrollment-choice):hover { background: var(--home-hover); }
+  .enrollment-choice:hover:enabled > svg:last-child { transform: translateX(2px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.ak-dialog, .ak-backdrop, .ui-select-content, .setup-page)[data-state],
+  .workspace-setup .setup-page,
+  .ak-dialog .banked-reset-review { animation: none; }
+  :is(.ak-dialog, .workspace-setup) .ui-button:active:enabled:not(:focus-visible) { transform: none; }
+  .ak-dialog .modal-head :is(.icon, .modal-back).ui-button:active:enabled { transform: translateY(-50%); }
+  .enrollment-choice:hover:enabled > svg:last-child { transform: none; }
+}
+
+
+/* Close and Back fade a single layer without an underlying native hover flash. */
+.ak-dialog .modal-head :is(.icon, .modal-back).ui-button:not(.popup-close):is(:hover, :active):enabled {
+  background: transparent;
+  background-color: transparent;
+  color: var(--home-muted);
+}
+.workspace-picker-panel :is(.workspace-choice, .workspace-create, .workspace-edit, .workspace-picker-head .ui-button) {
+  transition: background-color 220ms ease, color 180ms ease, transform 170ms var(--ease-out);
+}
+.workspace-picker-panel :is(.workspace-choice:not([aria-selected="true"]), .workspace-create, .workspace-edit):active:enabled:not(:focus-visible) { transform: scale(.98); }
+@media (prefers-reduced-motion: reduce) {
+  .workspace-picker-panel :is(.workspace-choice:not([aria-selected="true"]), .workspace-create, .workspace-edit):active:enabled { transform: none; }
+}
+
+/* Confirmation choices remain readable at the narrowest tray width. */
+.ak-dialog .workspace-remove.is-confirming { display: grid; gap: 8px; }
+.ak-dialog .workspace-remove.is-confirming p { margin: 0 0 4px; overflow-wrap: anywhere; }
+.ak-dialog .workspace-remove.is-confirming .ui-button {
+  width: 100%; margin: 0; min-height: 36px; padding: 8px 12px;
+  white-space: normal; line-height: 18px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ak-dialog .ui-select-trigger:hover:enabled { background: var(--home-hover); }
+  .ak-dialog button.ui-switch:hover:enabled {
+    background: color-mix(in srgb, var(--home-track), var(--home-text) 12%);
+  }
+  .ak-dialog button.ui-switch[data-state="checked"]:hover:enabled {
+    background: color-mix(in srgb, var(--home-add-fill), white 10%);
+  }
+}
+
+/* Creation and dismissal have one rounded feedback layer, separate from dividers. */
+.workspace-picker-panel :is(.workspace-create, .workspace-edit)::before,
+:is(.ak-dialog, .workspace-picker-panel, .auth-file-actions) .popup-close.ui-button::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  border-radius: inherit; opacity: 0; pointer-events: none;
+  transition: opacity 150ms ease;
+}
+.workspace-picker-panel :is(.workspace-create, .workspace-edit)::before { background: var(--home-hover); }
+.workspace-picker-panel :is(.workspace-create, .workspace-edit):is(:hover, :active):enabled { background: transparent; color: var(--home-text); }
+:is(.ak-dialog, .workspace-picker-panel, .auth-file-actions) .popup-close.ui-button {
+  position: relative; isolation: isolate; color: var(--home-muted); background: transparent;
+  transition: color 150ms ease, transform 100ms var(--ease-out);
+}
+/* Modal header positioning is retained while sharing the picker close treatment. */
+.ak-dialog .modal-head .popup-close.ui-button { position: absolute; }
+:is(.ak-dialog, .workspace-picker-panel, .auth-file-actions) .popup-close.ui-button::before {
+  background: color-mix(in srgb, var(--home-danger) 13%, transparent);
+}
+:is(.ak-dialog, .workspace-picker-panel, .auth-file-actions) .popup-close.ui-button:is(:hover, :active):enabled { background: transparent; }
+:is(.ak-dialog, .workspace-picker-panel, .auth-file-actions) .popup-close.ui-button:active:enabled { color: var(--home-danger); }
+:is(.ak-dialog, .workspace-picker-panel, .auth-file-actions) .popup-close.ui-button:active:enabled::before,
+.workspace-picker-panel :is(.workspace-create, .workspace-edit):active:enabled::before { opacity: 1; }
+.workspace-picker-panel .popup-close.ui-button:active:enabled:not(:focus-visible) { transform: scale(.96); }
+:is(.ak-dialog, .workspace-picker-panel, .auth-file-actions) .popup-close.ui-button:focus-visible {
+  outline: none; transition: none;
+}
+.workspace-picker-panel :is(.workspace-create, .workspace-edit):focus-visible { transition: none; }
+@media (hover: hover) and (pointer: fine) {
+  .workspace-picker-panel :is(.workspace-create, .workspace-edit):hover:enabled::before,
+  :is(.ak-dialog, .workspace-picker-panel, .auth-file-actions) .popup-close.ui-button:hover:enabled::before { opacity: 1; }
+  :is(.ak-dialog, .workspace-picker-panel, .auth-file-actions) .popup-close.ui-button:hover:enabled { color: var(--home-danger); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .workspace-picker-panel .popup-close.ui-button:active:enabled { transform: none; }
+  .workspace-picker-panel :is(.workspace-create, .workspace-edit)::before,
+  :is(.ak-dialog, .workspace-picker-panel, .auth-file-actions) .popup-close.ui-button::before { transition-duration: 100ms; }
+}
+
+/* One quiet hover layer; persistent solid selection owns the emphasis. */
+.ak-dialog :is(.ios-segments, .usage-choices) {
+  --segment-inset: 3px;
+  /* Concentric corners: outer radius minus the border and inner spacing. */
+  --segment-radius: calc(var(--ui-radius) - 1px - var(--segment-inset));
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-template-columns: none;
+  gap: 4px;
+  padding: var(--segment-inset);
+  border: 1px solid var(--home-divider);
+  border-radius: var(--ui-radius);
+  background: var(--home-inset);
+  box-shadow: none;
+  isolation: isolate;
+}
+/* One persistent selection layer can reverse mid-flight without remounting.
+ * Match the grid's 3px inset and 4px gaps, including dynamic cadence options. */
+.ak-dialog .ios-segments { --segment-duration: 220ms; }
+.ak-dialog .ios-segments::before {
+  left: var(--segment-inset);
+  top: var(--segment-inset);
+  bottom: var(--segment-inset);
+  border-radius: var(--segment-radius);
+  display: block;
+  z-index: 0;
+  width: calc((100% - 2 * var(--segment-inset) - (var(--segment-count) - 1) * 4px) / var(--segment-count));
+  background: var(--home-segment-fill);
+  box-shadow: inset 0 0 0 1px var(--home-divider);
+  pointer-events: none;
+  transform: translateX(calc(var(--segment-index) * (100% + 4px)));
+  transition: transform var(--segment-duration) var(--ease-out);
+}
+.ak-dialog :is(.ios-segments, .usage-choices) > button {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: auto;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 4px;
+  border: 0;
+  border-radius: var(--segment-radius);
+  background: transparent;
+  box-shadow: none;
+  color: var(--home-muted);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  transition: none;
+}
+.ak-dialog :is(.ios-segments, .usage-choices) > button::before { display: none; }
+.ak-dialog :is(.ios-segments, .usage-choices) > button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--home-hover);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms var(--ease-out);
+}
+.ak-dialog :is(.ios-segments, .usage-choices) > button:is(:hover, :active):enabled {
+  background: transparent;
+}
+.ak-dialog :is(.ios-segments, .usage-choices) > button[data-state]:is([data-state="active"], [data-state="on"], [data-state="checked"]) {
+  background: var(--home-hover);
+  color: var(--home-text);
+  box-shadow: inset 0 0 0 1px var(--home-divider);
+}
+.ak-dialog :is(.ios-segments, .usage-choices) > button:focus-visible {
+  outline: none;
+
+}
+.ak-dialog :is(.ios-segments, .usage-choices) > button:focus-visible::after { transition: none; }
+.ak-dialog :is(.ios-segments, .usage-choices) > button:disabled { opacity: .45; cursor: default; }
+.ak-dialog .ios-segments > button {
+  z-index: 1;
+  transition: color var(--control-motion) ease;
+}
+.ak-dialog .ios-segments > button[data-state]:is([data-state="active"], [data-state="on"], [data-state="checked"]) {
+  background: transparent;
+  color: var(--home-segment-ink);
+  box-shadow: none;
+}
+.ak-dialog .ios-segments:has(button:focus-visible)::before { transition-duration: 0ms; }
+.ak-dialog .ios-segments:has(button:focus-visible) > button { transition: none; }
+@media (hover: hover) and (pointer: fine) {
+  .ak-dialog :is(.ios-segments, .usage-choices) > button:hover:enabled { color: var(--home-text); }
+  .ak-dialog :is(.ios-segments, .usage-choices) > button:not([data-state="active"], [data-state="on"], [data-state="checked"]):hover:enabled::after { opacity: .3; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ak-dialog :is(.ios-segments, .usage-choices) > button::after { transition-duration: 100ms; }
+  .ak-dialog .ios-segments::before { transition: none; }
+  .ak-dialog .ios-segments > button { transition-duration: 100ms; }
+}
+button.ui-switch { box-shadow: none; border: 0; }
+.ak-dialog.settings-card .reset-settings.ui-button {
+  min-height: 44px;
+  height: auto;
+  padding: 0 12px;
+  border: 1px solid var(--home-divider);
+  background: var(--home-inset);
+  color: var(--home-muted);
+  text-decoration: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .ak-dialog.settings-card .reset-settings.ui-button:hover:enabled { background: var(--home-hover); color: var(--home-text); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ak-dialog.settings-card .ui-switch-thumb { transition: none; }
+}
+
+/* Usage preferences express a choice, a mode and a membership list. */
+.workspace-usage button.usage-choice .ui-radio-indicator { display: none; }
+.workspace-settings-card .workspace-usage .settings-section + .settings-section { margin-top: 16px; }
+.workspace-usage .usage-reset-help { min-height: 33px; }
+.workspace-usage .usage-cycle { padding: 12px 0 4px; border-top: 1px solid var(--home-divider); }
+.workspace-usage .usage-cycle > .settings-subtitle { display: block; margin-bottom: 4px; }
+.workspace-usage .usage-account {
+  display: flex; align-items: center; gap: 12px; min-height: 40px;
+  position: relative; cursor: pointer; font-size: 13px;
+}
+.workspace-usage .usage-account > span { min-width: 0; overflow-wrap: anywhere; }
+.workspace-usage .usage-account small { margin-left: auto; color: var(--home-muted); font-size: 11px; }
+.workspace-usage .usage-account:has(:disabled) { cursor: default; }
+.workspace-usage .usage-account .ui-checkbox { flex-shrink: 0; }
+@media (hover: hover) and (pointer: fine) {
+  .workspace-usage .usage-account:not(:has(:disabled)):hover { color: var(--home-action); }
+}
+
+/* Menu bar: source first, visible style choices, then optional warning detail. */
+.ak-dialog .menubar-settings > .settings-section { margin-top: 16px; }
+.ak-dialog .menubar-settings > .settings-section:first-child { margin-top: 0; }
+.menubar-section-title { margin-top: 18px; }
+.menubar-account { max-width: 60%; text-align: right; overflow-wrap: anywhere; font-size: 12px; color: var(--home-muted); }
+.menubar-styles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+/* The complete preview is the radio target; no second indicator or nested hit area. */
+.ak-dialog button.menubar-style {
+  position: relative; isolation: isolate; display: flex; flex-direction: column;
+  flex: initial; width: 100%; height: auto; min-width: 0; min-height: 96px;
+  padding: 12px 10px 10px; border: 0; border-radius: var(--ui-radius);
+  background: var(--home-inset); color: var(--home-text); cursor: pointer;
+  transition: transform 160ms var(--ease-out);
+}
+.ak-dialog button.menubar-style::before {
+  content: ""; display: block; position: absolute; inset: 0; z-index: -1;
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--home-inset), var(--home-text) 12%);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--home-text) 20%, transparent);
+  opacity: 0; pointer-events: none; transition: opacity 220ms ease;
+}
+.ak-dialog button.menubar-style::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit;
+  background: color-mix(in srgb, var(--home-active) 16%, var(--home-inset));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--home-focus) 65%, transparent);
+  opacity: 0; pointer-events: none; transition: opacity 180ms var(--ease-out);
+}
+.ak-dialog button.menubar-style[data-state="checked"] { background: var(--home-inset); border: 0; }
+.ak-dialog button.menubar-style[data-state="checked"]::after { opacity: 1; }
+.ak-dialog button.menubar-style:focus-visible { outline: none; }
+.ak-dialog button.menubar-style:disabled { opacity: .55; cursor: default; }
+.ak-dialog button.menubar-style:active:enabled:not(:focus-visible) { transform: scale(.98); }
+.menubar-style-sample { display: grid; place-items: center; height: 44px; font-size: 25px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.menubar-sample-unit { font-size: 16px; margin-left: 2px; }
+.menubar-sample-bars { display: grid; gap: 5px; width: 55px; }
+.menubar-sample-bars i { position: relative; height: 6px; border-radius: 3px; background: var(--home-track); overflow: hidden; }
+.menubar-sample-bars i::after { content: ""; display: block; width: 72%; height: 100%; border-radius: inherit; background: var(--home-text); }
+.menubar-sample-bars i + i::after { width: 40%; }
+.menubar-sample-timeline { display: inline-grid; gap: 2px; }
+.menubar-sample-timeline::after {
+  content: ""; height: 2px; border-radius: 1px;
+  background: linear-gradient(to right, currentColor 45%, var(--home-track) 45%);
+}
+.menubar-style-caption { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; font-weight: 600; min-height: 24px; }
+.menubar-example-note { margin: 6px 0 2px; font-size: 10px; color: var(--home-muted); }
+.menubar-check { display: flex; align-items: center; gap: 9px; min-height: 44px; cursor: pointer; font-size: 12px; }
+.menubar-check:has(:disabled), .menubar-threshold:has(:disabled) { cursor: default; opacity: .55; }
+.menubar-limits { padding: 0; margin: 10px 0 0; border: 0; min-width: 0; }
+.menubar-limits legend { padding: 0; margin-bottom: 4px; }
+.menubar-limit-options { display: flex; flex-wrap: wrap; gap: 4px 8px; }
+.menubar-limit { padding: 0 12px; border: 0; border-radius: var(--ui-radius); background: var(--home-inset); }
+.ak-dialog .menubar-colors { padding-top: 16px; border-top: 1px solid var(--home-divider); }
+.ak-dialog .menubar-colors > .settings-group { padding: 0 8px 8px; border: 0; background: var(--home-inset); }
+.ak-dialog .menubar-colors > .settings-group > .setting-row { padding: 0; min-height: 44px; }
+.menubar-thresholds { border: 0; border-radius: 0; background: transparent; }
+.menubar-threshold { position: relative; display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 8px; cursor: pointer; }
+.menubar-threshold + .menubar-threshold { border-top: 1px solid var(--home-divider); }
+.menubar-threshold-dot { flex: 0 0 7px; height: 7px; border-radius: 50%; background: var(--home-muted); }
+.menubar-threshold.is-warning .menubar-threshold-dot { background: var(--warning-threshold); }
+.menubar-threshold.is-high .menubar-threshold-dot { background: var(--home-warning); }
+.menubar-threshold.is-critical .menubar-threshold-dot { background: var(--home-danger); }
+.menubar-threshold-name { flex: 1; min-width: 0; font-size: 12px; font-weight: 500; color: var(--home-text); }
+.menubar-threshold-value { color: var(--home-muted); font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.menubar-threshold .ui-switch-thumb { transition: none; }
+.menubar-threshold .ui-switch { flex-shrink: 0; margin-left: 4px; }
+@media (hover: hover) and (pointer: fine) {
+  .ak-dialog button.menubar-style:hover:enabled:not([data-state="checked"])::before { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ak-dialog button.menubar-style:active:enabled:not(:focus-visible) { transform: none; }
+  .ak-dialog button.menubar-style::before,
+  .ak-dialog button.menubar-style::after { transition-duration: 100ms; }
+}
+.ak-dialog .menubar-settings .settings-subtitle { margin-bottom: 8px; }
+.ak-dialog .menubar-settings .setting-row { min-height: 48px; padding: 6px 0; }
+.ak-dialog .menubar-settings .menubar-section-title { margin-top: 14px; }
+.ak-dialog .menubar-settings .menubar-colors > .settings-group > .setting-row { padding: 0; }
+/* Separate the actionable source from the read-only account identity. */
+.menubar-source { display: grid; gap: 8px; min-width: 0; }
+.ak-dialog button.menubar-source-select {
+  position: relative; isolation: isolate; width: 100%; max-width: none; min-width: 0;
+  min-height: 44px; padding: 10px 12px; justify-content: space-between; text-align: left;
+  border: 0; border-radius: var(--ui-radius); background: var(--home-inset);
+  box-shadow: inset 0 0 0 1px var(--home-divider);
+  transition: none;
+}
+.ak-dialog button.menubar-source-select::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit;
+  background: var(--home-hover); opacity: 0; pointer-events: none;
+  transition: opacity 240ms ease;
+}
+.ak-dialog button.menubar-source-select[data-state="open"]::before { opacity: .65; }
+.ak-dialog button.menubar-source-select:active:enabled:not(:focus-visible) {
+  transform: none;
+}
+.ak-dialog button.menubar-source-select:active:enabled::before { opacity: .8; }
+.ak-dialog button.menubar-source-select:focus-visible {
+  outline: none; transition: none;
+}
+.ak-dialog button.menubar-source-select[data-input="keyboard"]::before,
+.ak-dialog button.menubar-source-select[data-input="keyboard"] .ui-select-chevron { transition: none; }
+.menubar-source-select > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.menubar-source-select .ui-select-chevron { transition: none; }
+.menubar-source-select[data-state="open"] .ui-select-chevron { transform: none; }
+.menubar-source-account {
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline;
+  gap: 3px 12px; margin: 0; padding: 0 4px; font-size: 11px; line-height: 1.5;
+  color: var(--home-muted); overflow-wrap: anywhere;
+}
+.menubar-source-account bdi { min-width: 0; max-width: 100%; margin-left: auto; font-size: 12px; color: var(--home-text); text-align: right; }
+.menubar-source-account-picker { display: grid; gap: 6px; min-width: 0; margin-top: 4px; }
+.ak-dialog .menubar-source-account-picker .settings-subtitle { margin: 0; padding-inline: 4px; }
+@media (hover: hover) and (pointer: fine) {
+  .ak-dialog button.menubar-source-select:hover:enabled { background: var(--home-inset); }
+  .ak-dialog button.menubar-source-select:hover:enabled::before { opacity: .65; }
+  .ak-dialog button.menubar-source-select[data-state="open"]:enabled::before { opacity: .65; }
+  .ak-dialog button.menubar-source-select:active:enabled::before { opacity: .8; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ak-dialog button.menubar-source-select { transition: none; }
+  .ak-dialog button.menubar-source-select:active:enabled:not(:focus-visible) { transform: none; }
+  .ak-dialog button.menubar-source-select::before { transition-duration: 100ms; }
+  .menubar-source-select .ui-select-chevron { transition: none; }
+  .menubar-source-select[data-state="open"] .ui-select-chevron { transform: none; }
+}
+/* Fade selection in place; no sliding on peer choices or keyboard navigation. */
+.ak-dialog.workspace-settings-card .usage-choices > button[data-state="checked"] {
+  background: transparent; box-shadow: none;
+}
+.ak-dialog.workspace-settings-card .usage-choices > button[data-state="checked"]::after { opacity: 1; }
+.workspace-settings-card.is-keyboard .usage-choices > button::after { transition: none; }
+
+/* Quiet checkbox edges; persistent layers can reverse before a transition ends. */
+:is(.workspace-settings-card, .setup-account-option) button.ui-checkbox {
+  isolation: isolate; border: 0; border-radius: 5px;
+  background: color-mix(in srgb, var(--home-text) 5%, var(--home-inset));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--home-muted) 60%, transparent);
+  transition: transform 160ms var(--ease-out);
+}
+:is(.workspace-settings-card, .setup-account-option) button.ui-checkbox::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit;
+  background: var(--home-add-fill); opacity: 0;
+  pointer-events: none; transition: opacity 160ms var(--ease-out);
+}
+:is(.workspace-settings-card, .setup-account-option) button.ui-checkbox[data-state="checked"] { background: var(--home-inset); border: 0; box-shadow: none; }
+:is(.workspace-settings-card, .setup-account-option) button.ui-checkbox[data-state="checked"]::after { opacity: 1; }
+:is(.workspace-settings-card, .setup-account-option) .ui-checkbox-indicator {
+  opacity: 1; transform: scale(1); transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-out);
+}
+:is(.workspace-settings-card, .setup-account-option) .ui-checkbox-indicator[data-state="unchecked"] { opacity: 0; transform: scale(.9); }
+:is(.workspace-settings-card, .setup-account-option) button.ui-checkbox:active:enabled:not(:focus-visible) { transform: scale(.94); }
+.workspace-settings-card.is-keyboard :is(button.ui-checkbox, .ui-checkbox-indicator, button.menubar-style),
+.workspace-settings-card.is-keyboard :is(button.ui-checkbox, button.menubar-style)::after { transition: none; }
+:is(.workspace-setup-wizard, .add-accounts-panel)[data-motion="keyboard"] .setup-account-option :is(button.ui-checkbox, .ui-checkbox-indicator),
+:is(.workspace-setup-wizard, .add-accounts-panel)[data-motion="keyboard"] .setup-account-option button.ui-checkbox::after { transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  :is(.workspace-settings-card, .setup-account-option) button.ui-checkbox:active:enabled:not(:focus-visible),
+  :is(.workspace-settings-card, .setup-account-option) .ui-checkbox-indicator[data-state="unchecked"] { transform: none; }
+  :is(.workspace-settings-card, .setup-account-option) .ui-checkbox-indicator,
+  :is(.workspace-settings-card, .setup-account-option) button.ui-checkbox::after { transition: opacity 100ms var(--ease-out); }
+}
+
+/* Provider-local discovery keeps the current source and its single login together. */
+.provider-local { display: grid; gap: 10px; margin: 4px 0 20px; }
+.provider-local-heading, .provider-local-source-head, .provider-local-account { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.provider-local-heading h3 { margin: 0; color: var(--home-text); font-size: 14px; font-weight: 650; }
+.provider-local-list { display: grid; gap: 8px; }
+.provider-local-source { display: grid; gap: 8px; padding: 12px; border: 1px solid var(--home-border); border-radius: var(--ui-radius); background: var(--home-inset); }
+.provider-local-source-head { font-size: 12px; }
+.provider-local-source-head > span { color: var(--home-muted); font-size: 11px; }
+.provider-local-account { align-items: center; }
+.provider-local-account .setup-account-identity { min-width: 0; gap: 4px; }
+.provider-local-account .setup-account-identity > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.provider-local-account .ui-button { flex-shrink: 0; min-width: 64px; }
+.provider-local-account .plan-badge { align-self: flex-start; padding: 2px 6px; border: 0; border-radius: 5px; background: var(--home-hover); color: var(--home-muted); font-size: 10px; line-height: 14px; }
+.provider-local-status { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--home-muted); font-size: 12px; line-height: 1.5; }
+.provider-local-status svg { flex-shrink: 0; }
+.enrollment-methods-label { margin-bottom: 8px; color: var(--home-muted); font-size: 12px; font-weight: 600; }
+
+/* Enrollment gives each step a title and keeps one route visually primary. */
+.enrollment-step-heading { display: grid; gap: 8px; margin-bottom: 4px; }
+.enrollment-step-heading h3 { margin: 0; color: var(--home-text); font-size: 18px; line-height: 24px; font-weight: 650; letter-spacing: -.25px; }
+.enrollment-step-heading h3:focus { outline: none; }
+.enrollment-step-heading p { margin: 0; color: var(--home-muted); font-size: 12px; line-height: 18px; overflow-wrap: anywhere; }
+.enrollment-provider { display: flex; align-items: center; gap: 7px; margin-bottom: 4px; color: var(--home-muted); font-size: 12px; }
+.enrollment-provider .plogo { width: 20px; height: 20px; }
+.enrollment-choices .enrollment-recommended { border-color: var(--home-focus); background: color-mix(in srgb, var(--home-inset), var(--home-active) 7%); }
+.enrollment-waiting { display: flex; align-items: center; gap: 8px; min-height: 24px; }
+.enrollment-waiting svg { flex-shrink: 0; color: var(--home-action); }
+.account-enrollment .enrollment-login { padding: 16px; gap: 14px; border: 1px solid var(--home-divider); }
+.account-enrollment .enrollment-login > .ui-button { min-height: 40px; }
+.account-enrollment > .ui-button-primary { min-height: 40px; }
+.account-enrollment .auth-file-drop { padding: 20px 16px; gap: 12px; }
+.account-enrollment .auth-file-actions .ui-button-sm { min-height: 40px; }
+.account-enrollment .enrollment-code { padding: 10px; background: var(--home-picker); border: 1px solid var(--home-divider); border-radius: var(--ui-radius); flex-wrap: wrap; }
+.account-enrollment .enrollment-code code { overflow-wrap: anywhere; }
+.account-enrollment .enrollment-back { min-height: 40px; }
+
+/* Destructive actions signal consequence through text, not a competing red CTA. */
+:is(.ak-dialog, .workspace-setup) .ui-button:is(.ui-button-destructive, .danger):not(.link-btn) {
+  --destructive-ink: var(--home-danger);
+  position: relative;
+  isolation: isolate;
+  --destructive-fill: color-mix(in srgb, var(--destructive-ink) 9%, var(--home-inset));
+  background: var(--destructive-fill);
+  color: var(--destructive-ink);
+  border: 1px solid transparent;
+  box-shadow: none;
+  transition: transform 160ms var(--ease-out);
+}
+[data-theme="light"] :is(.ak-dialog, .workspace-setup) .ui-button:is(.ui-button-destructive, .danger):not(.link-btn) {
+  --destructive-ink: #b43e4b;
+}
+:is(.ak-dialog, .workspace-setup) .ui-button:is(.ui-button-destructive, .danger):not(.link-btn)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--destructive-ink) 10%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease;
+}
+/* Override legacy danger hover fills, including the light-theme rule. */
+:is(.ak-dialog, .workspace-setup) .ui-button:is(.ui-button-destructive, .danger):not(.link-btn):is(:hover, :active):enabled {
+  background: var(--destructive-fill);
+  color: var(--destructive-ink);
+}
+:is(.ak-dialog, .workspace-setup) .ui-button:is(.ui-button-destructive, .danger):not(.link-btn):active:enabled::before { opacity: 1; }
+.ak-dialog.discard-confirm .discard-actions .ui-button { min-height: 44px; }
+@media (hover: hover) and (pointer: fine) {
+  :is(.ak-dialog, .workspace-setup) .ui-button:is(.ui-button-destructive, .danger):not(.link-btn):hover:enabled::before { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.ak-dialog, .workspace-setup) .ui-button:is(.ui-button-destructive, .danger):not(.link-btn)::before { transition-duration: 100ms; }
+}
+
+.account-enrollment > .enrollment-verify.ui-button { min-height: 40px; }
+
+.provider-local-name { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-width: 0; }
+
+/* Account editing keeps the primary save action and removal group distinct. */
+.ak-dialog.account-settings .account-edit-form { gap: 12px; margin-bottom: 0; }
+.ak-dialog.account-settings .account-edit-form input { height: 44px; min-height: 44px; }
+.ak-dialog.account-settings .account-edit-form > .ui-button,
+.ak-dialog.account-settings .workspace-remove .ui-button {
+  height: auto;
+  min-height: 44px;
+  padding: 10px 12px;
+}
+.ak-dialog.account-settings .workspace-remove { margin-top: 20px; padding-top: 16px; }
+.ak-dialog.account-settings .account-edit-form > .ui-button:disabled {
+  background: var(--home-hover);
+  color: var(--home-muted);
+  border-color: transparent;
+}
+
+/* Usage: navigation stays segmented; preferences show their outcome. */
+.usage-display-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.ak-dialog button.usage-display-card { align-items: stretch; text-align: left; padding: 14px; min-height: 136px; }
+.usage-display-value { font-size: 20px; font-weight: 600; line-height: 1.2; letter-spacing: -.3px; font-variant-numeric: tabular-nums; }
+.usage-display-value > span { font-size: 12px; letter-spacing: 0; margin-left: 2px; color: var(--home-muted); }
+.usage-display-meter { height: 5px; margin: 12px 0 14px; border-radius: 3px; background: var(--home-track); overflow: hidden; }
+.usage-display-meter i { display: block; height: 100%; width: 72%; border-radius: inherit; background: var(--home-action); }
+.usage-display-meter.is-used i { width: 28%; }
+.usage-display-label { display: flex; align-items: center; justify-content: space-between; gap: 4px; font-size: 12px; font-weight: 600; }
+.usage-display-check { opacity: 0; color: var(--home-action); }
+[data-state="checked"] > .usage-display-label > .usage-display-check { opacity: 1; }
+.usage-display-hint { font-size: 11px; color: var(--home-muted); margin-top: 3px; line-height: 1.4; }
+.usage-predictions { display: flex; align-items: center; gap: 12px; min-height: 64px; border-top: 1px solid var(--home-divider); cursor: pointer; }
+.usage-predictions > .ui-checkbox { flex-shrink: 0; }
+.usage-predictions > span { display: grid; gap: 4px; min-width: 0; }
+.usage-predictions:has(:disabled) { opacity: .55; cursor: default; }
+.workspace-settings-card.is-keyboard button.usage-display-card::after { transition: none; }
+@media (hover: hover) and (pointer: fine) {
+  .usage-predictions:not(:has(:disabled)):hover .setting-name { color: var(--home-action); }
+}
+
+/* Let identity actions rest at the bottom while short panels can still scroll. */
+.workspace-settings-card #workspace-settings-body { display: flex; flex-direction: column; }
+.workspace-settings-card .workspace-general[data-state="active"] { display: flex; flex-direction: column; flex: 1 0 auto; }
+.workspace-settings-card .workspace-general .workspace-form { flex: 1; }
+.workspace-settings-card .workspace-general .workspace-form-actions { margin-top: auto; }
+
+/* General preferences: each choice owns its only frame. */
+.ak-dialog.settings-card .settings-general { gap: 16px; }
+.ak-dialog.settings-card .settings-general > .settings-group {
+  border: 0;
+  padding-inline: 12px;
+}
+.ak-dialog.settings-card .settings-choice {
+  display: grid;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.settings-choice h3 {
+  margin: 0;
+  color: var(--home-text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.settings-choice-heading { display: grid; gap: 4px; }
+.settings-choice .setting-note { margin: 0; color: var(--home-muted); }
+.ak-dialog.settings-card .settings-choice > .ios-segments { width: 100%; }
+.ak-dialog.settings-card .settings-general > .settings-footer { padding-top: 0; }
+
+/* Give switch groups breathing room while keeping their shared quiet edge. */
+.ak-dialog .settings-group:has(.ui-switch),
+.ak-dialog.settings-card .settings-general > .settings-group:has(.ui-switch),
+.ak-dialog .menubar-colors > .settings-group:has(.ui-switch) {
+  border: 0;
+  padding: 4px 16px;
+}
+.ak-dialog .menubar-colors > .settings-group:has(.ui-switch) { padding-bottom: 16px; }
+.menubar-initials-preview { display: grid; justify-items: center; gap: 8px; margin-top: 12px; padding: 12px 8px; border-radius: var(--ui-radius); background: var(--home-inset); cursor: pointer; }
+.menubar-initials-preview:has(:disabled) { opacity: .55; cursor: default; }
+.menubar-identity-sample { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 32px; font-size: 25px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.menubar-initials-sample { display: none; }
+.menubar-initials-sample[data-visible="true"] { display: inline; }
+.menubar-initials-caption { display: flex; align-items: center; gap: 8px; min-height: 24px; font-size: 12px; }
+@media (hover: hover) and (pointer: fine) {
+  .menubar-initials-preview:hover:not(:has(:disabled)) { background: color-mix(in srgb, var(--home-inset), var(--home-hover) 35%); }
+}
+
+/* Dependent levels stay inside their master, connected by a quiet inset guide. */
+.menubar-colors .workspace-limit-colors { margin: 0 0 4px 4px; padding-left: 12px; border-left: 1px solid var(--home-divider); }
+.menubar-colors .setting-note { margin: 8px 0 0; font-size: 11px; }
+.ak-dialog .menubar-threshold button.ui-switch:hover:enabled { background: var(--home-track); }
+.ak-dialog .menubar-threshold button.ui-switch[data-state="checked"]:hover:enabled { background: var(--home-add-fill); }
+/* WebKit can focus scroll containers even without tabindex. Only direct controls
+ * draw focus edges, so section rings never spill beyond a clipped scrollport. */
+:is(div, section, article, main, aside, header, footer, nav, form, fieldset, ul, ol):not([role="button"], [role="combobox"], [role="slider"], [role="checkbox"], [role="radio"], [role="switch"], [role="tab"], [role="link"], [contenteditable="true"]):focus,
+[role="tabpanel"]:focus { outline: none; }
+.settings-panel:focus, .app-modal-body:focus, [role="tabpanel"]:focus { box-shadow: none; }
+.setup-account-option .ui-checkbox:focus-visible { outline: none; }
+
+/* Flat account metadata on secondary surfaces; status stays in the text. */
+.ak-dialog .plan-badge {
+  background: var(--home-hover); color: var(--home-muted);
+  border: 0; box-shadow: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ak-dialog button.menubar-style::before { transition-duration: 100ms; }
+}

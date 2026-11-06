@@ -1,0 +1,58 @@
+name: Release draft
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: read
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: macos-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+      - run: pnpm install --frozen-lockfile
+      - name: Install security scanners
+        run: brew install cargo-audit gitleaks
+      - name: Security gate for the macOS release targets
+        run: pnpm run security:check
+      - run: pnpm run release:check
+      - name: Typecheck and frontend tests
+        run: |
+          pnpm exec tsc --noEmit
+          pnpm exec vitest run
+          pnpm run test:release
+      - name: Rust tests
+        working-directory: src-tauri
+        run: cargo test --locked
+      - name: Build universal macOS app and signed update
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: |
+          test -n "$TAURI_SIGNING_PRIVATE_KEY"
+          pnpm exec tauri build --ci --target universal-apple-darwin --bundles app,dmg --config '{"bundle":{"createUpdaterArtifacts":true}}' -- --locked
+      - name: Assemble and verify release assets
+        run: node scripts/release.mjs assemble src-tauri/target/universal-apple-darwin/release/bundle
+      - name: Create draft for owner-approved publication
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="$(node -p "require('./package.json').version")"
+          gh release create "$GITHUB_REF_NAME" release-artifacts/* --verify-tag --draft --title "Aiturn $VERSION" --notes-file "docs/releases/$VERSION.md"

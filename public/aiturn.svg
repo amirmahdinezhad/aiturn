@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="128" height="128" viewBox="0 0 128 128" role="img" aria-labelledby="title description">
+  <title id="title">Aiturn</title>
+  <desc id="description">Two circular arrows with narrow gaps surround a rounded four-point star.</desc>
+  <defs>
+    <path id="arrow" d="
+      M21.59 56.90 A43 43 0 0 1 104.90 50.71
+      L107.37 49.91 Q109.41 49.24 108.97 51.28
+      L106.02 60.65 Q105.12 62.73 103.17 61.58
+      L95.28 55.73 Q93.72 54.34 95.77 53.68
+      L98.24 52.88 A36 36 0 0 0 28.49 58.06
+      A3.5 3.5 0 0 1 21.59 56.90Z
+    "/>
+  </defs>
+  <g fill="#505193">
+    <use xlink:href="#arrow"/>
+    <use xlink:href="#arrow" transform="rotate(180 64 64)"/>
+    <path d="M60.91 49.02Q64.00 43.50 67.09 49.02 L70.18 54.54Q71.35 56.65 73.46 57.82 L78.98 60.91Q84.50 64.00 78.98 67.09 L73.46 70.18Q71.35 71.35 70.18 73.46 L67.09 78.98Q64.00 84.50 60.91 78.98 L57.82 73.46Q56.65 71.35 54.54 70.18 L49.02 67.09Q43.50 64.00 49.02 60.91 L54.54 57.82Q56.65 56.65 57.82 54.54Z"/>
+  </g>
+</svg>

@@ -1,0 +1,66 @@
+[package]
+name = "aiturn"
+version = "1.0.0"
+description = "macOS menu-bar accounts and usage for AI coding assistants"
+authors = ["Amir Mahdi Nezhad"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
+name = "aiturn_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+# Tauri CLI enables `tauri/custom-protocol` for production builds only.
+# Development must leave it off so the panel loads Vite instead of embedded assets.
+tauri = { version = "~2.12.0", features = ["macos-private-api", "tray-icon", "image-png"] }
+tauri-plugin-opener = "2"
+tauri-plugin-single-instance = "2"
+tauri-plugin-autostart = "2"
+tauri-plugin-positioner = { version = "2", features = ["tray-icon"] }
+tauri-plugin-process = "2"
+tauri-plugin-notification = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+libc = "0.2"
+reqwest = { version = "0.13", default-features = false, features = ["blocking", "json", "form", "charset", "http2", "system-proxy"] }
+dirs = "7"
+chrono = "0.4"
+base64 = "0.22"
+toml = "1.1"
+uuid = { version = "1", features = ["v4"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+# Use macOS Security.framework for both provider HTTPS and signed updates.
+reqwest = { version = "0.13", default-features = false, features = ["native-tls"] }
+tauri-plugin-updater = { version = "2", default-features = false, features = ["native-tls", "system-proxy", "zip"] }
+objc2 = "0.6"
+objc2-app-kit = { version = "0.3", default-features = false, features = ["std", "libc", "NSApplication", "NSWindow", "NSRunningApplication", "NSWorkspace", "NSBitmapImageRep", "NSImageRep", "NSGraphicsContext", "NSGraphics", "NSStringDrawing", "NSAttributedString", "NSFont", "NSFontDescriptor", "NSColor", "NSBezierPath", "NSAppearance", "NSStatusItem", "NSStatusBarButton", "NSView", "objc2-core-foundation"] }
+objc2-foundation = { version = "0.3", default-features = false, features = ["std", "NSString", "NSArray", "NSURL", "NSDictionary", "NSAttributedString", "NSGeometry"] }
+
+[target.'cfg(not(target_os = "macos"))'.dependencies]
+reqwest = { version = "0.13", default-features = false, features = ["rustls"] }
+tauri-plugin-updater = "2"
+
+[dev-dependencies]
+minisign-verify = "0.2.5"
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+
+
+# Read the optimization guideline for more details: https://tauri.app/concept/size/#cargo-configuration
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+# Global stripping corrupts some proc-macro dylibs on Xcode 16.
+# build.rs drops local symbols only when linking the final macOS executable.
+strip = false
